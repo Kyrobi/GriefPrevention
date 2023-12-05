@@ -34,11 +34,11 @@ class SpamDetector
         result.finalMessage = message;
 
         //remedy any CAPS SPAM, exception for very short messages which could be emoticons like =D or XD
-        if (message.length() > 4 && this.stringsAreSimilar(message.toUpperCase(), message))
-        {
-            message = message.toLowerCase();
-            result.finalMessage = message;
-        }
+//        if (message.length() > 4 && this.stringsAreSimilar(message.toUpperCase(), message))
+//        {
+//            message = message.toLowerCase();
+//            result.finalMessage = message;
+//        }
 
         boolean spam = false;
         ChatterData chatterData = this.getChatterData(chatterID);

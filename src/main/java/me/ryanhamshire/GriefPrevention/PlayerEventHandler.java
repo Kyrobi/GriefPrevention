@@ -40,6 +40,7 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Levelled;
 import org.bukkit.block.data.Waterlogged;
 import org.bukkit.command.Command;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Creature;
@@ -362,8 +363,18 @@ class PlayerEventHandler implements Listener
                 GriefPrevention.AddLogEntry("Banning " + player.getName() + " for spam.", CustomLogEntryTypes.AdminActivity);
 
                 //kick and ban
-                PlayerKickBanTask task = new PlayerKickBanTask(player, instance.config_spam_banMessage, "GriefPrevention Anti-Spam", true);
-                instance.getServer().getScheduler().scheduleSyncDelayedTask(instance, task, 1L);
+//                PlayerKickBanTask task = new PlayerKickBanTask(player, instance.config_spam_banMessage, "GriefPrevention Anti-Spam", true);
+//                instance.getServer().getScheduler().scheduleSyncDelayedTask(instance, task, 1L);
+
+                Bukkit.getScheduler().runTask(instance, () -> {
+                    ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
+                    String command = "muteip -s " + player.getName() + " 1h Spamming";
+                    Bukkit.dispatchCommand(console, command);
+
+
+                    String staffNotif = "staffnotify 1094098145853579264 " + player.getName() + " was muted for spamming. (1 hour)";
+                    Bukkit.dispatchCommand(console,staffNotif);
+                });
             }
             else
             {
@@ -385,8 +396,17 @@ class PlayerEventHandler implements Listener
         if (result.muteReason != null)
         {
             //mute and log
+            Bukkit.getScheduler().runTask(instance, () -> {
+                ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
+                String command = "muteip -s " + player.getName() + " 1h Spamming";
+                Bukkit.dispatchCommand(console, command);
+
+                String staffNotif = "staffnotify 1094098145853579264 " + player.getName() + " was muted for spamming. (1 hour)";
+                Bukkit.dispatchCommand(console,staffNotif);
+            });
             GriefPrevention.AddLogEntry("Muted " + result.muteReason + ".");
             GriefPrevention.AddLogEntry("Muted " + player.getName() + " " + result.muteReason + ":" + message, CustomLogEntryTypes.Debug, true);
+
 
             return true;
         }
@@ -482,67 +502,67 @@ class PlayerEventHandler implements Listener
             return;
         }
 
-        //soft mute for chat slash commands
-        if (category == CommandCategory.Chat && this.dataStore.isSoftMuted(player.getUniqueId()))
-        {
-            event.setCancelled(true);
-            return;
-        }
-
-        //if the slash command used is in the list of monitored commands, treat it like a chat message (see above)
-        boolean isMonitoredCommand = (category == CommandCategory.Chat || category == CommandCategory.Whisper);
-        if (isMonitoredCommand)
-        {
-            //if anti spam enabled, check for spam
-            if (instance.config_spam_enabled)
-            {
-                event.setCancelled(this.handlePlayerChat(event.getPlayer(), event.getMessage(), event));
-            }
-
-            if (!player.hasPermission("griefprevention.spam") && this.bannedWordFinder.hasMatch(message))
-            {
-                event.setCancelled(true);
-            }
-
-            //unless cancelled, log in abridged logs
-            if (!event.isCancelled())
-            {
-                StringBuilder builder = new StringBuilder();
-                for (String arg : args)
-                {
-                    builder.append(arg).append(' ');
-                }
-
-                makeSocialLogEntry(event.getPlayer().getName(), builder.toString());
-            }
-        }
+//        //soft mute for chat slash commands
+//        if (category == CommandCategory.Chat && this.dataStore.isSoftMuted(player.getUniqueId()))
+//        {
+//            event.setCancelled(true);
+//            return;
+//        }
+//
+//        //if the slash command used is in the list of monitored commands, treat it like a chat message (see above)
+//        boolean isMonitoredCommand = (category == CommandCategory.Chat || category == CommandCategory.Whisper);
+//        if (isMonitoredCommand)
+//        {
+//            //if anti spam enabled, check for spam
+//            if (instance.config_spam_enabled)
+//            {
+//                event.setCancelled(this.handlePlayerChat(event.getPlayer(), event.getMessage(), event));
+//            }
+//
+//            if (!player.hasPermission("griefprevention.spam") && this.bannedWordFinder.hasMatch(message))
+//            {
+//                event.setCancelled(true);
+//            }
+//
+//            //unless cancelled, log in abridged logs
+//            if (!event.isCancelled())
+//            {
+//                StringBuilder builder = new StringBuilder();
+//                for (String arg : args)
+//                {
+//                    builder.append(arg).append(' ');
+//                }
+//
+//                makeSocialLogEntry(event.getPlayer().getName(), builder.toString());
+//            }
+//        }
 
         //if requires access trust, check for permission
-        isMonitoredCommand = false;
-        String lowerCaseMessage = message.toLowerCase();
-        for (String monitoredCommand : instance.config_claims_commandsRequiringAccessTrust)
-        {
-            if (lowerCaseMessage.startsWith(monitoredCommand))
-            {
-                isMonitoredCommand = true;
-                break;
-            }
-        }
+//        isMonitoredCommand = false;
+//        String lowerCaseMessage = message.toLowerCase();
+//        for (String monitoredCommand : instance.config_claims_commandsRequiringAccessTrust)
+//        {
+//            if (lowerCaseMessage.startsWith(monitoredCommand))
+//            {
+//                isMonitoredCommand = true;
+//                break;
+//            }
+//        }
 
-        if (isMonitoredCommand)
-        {
-            Claim claim = this.dataStore.getClaimAt(player.getLocation(), false, playerData.lastClaim);
-            if (claim != null)
-            {
-                playerData.lastClaim = claim;
-                Supplier<String> reason = claim.checkPermission(player, ClaimPermission.Access, event);
-                if (reason != null)
-                {
-                    GriefPrevention.sendMessage(player, TextMode.Err, reason.get());
-                    event.setCancelled(true);
-                }
-            }
-        }
+//        if (isMonitoredCommand)
+//        {
+//            Claim claim = this.dataStore.getClaimAt(player.getLocation(), false, playerData.lastClaim);
+//            if (claim != null)
+//            {
+//                playerData.lastClaim = claim;
+//                Supplier<String> reason = claim.checkPermission(player, ClaimPermission.Access, event);
+//                if (reason != null)
+//                {
+//                    GriefPrevention.sendMessage(player, TextMode.Err, reason.get());
+//                    event.setCancelled(true);
+//                }
+//            }
+//        }
     }
 
     private final ConcurrentHashMap<String, CommandCategory> commandCategoryMap = new ConcurrentHashMap<>();

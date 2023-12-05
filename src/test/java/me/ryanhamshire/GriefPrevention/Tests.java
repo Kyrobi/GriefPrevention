@@ -214,25 +214,25 @@ public class Tests
         assertNull(detector.AnalyzeMessage(player1, "When he finally came back, I /SoftMuted him and left him in the jail.", 28000).muteReason);
     }
 
-    @Test
-    public void testSpamDetectorCaps()
-    {
-        SpamDetector detector = new SpamDetector();
-        String message = "OMG I LUFF U KRISTINAAAAAA!";
-        SpamAnalysisResult result = detector.AnalyzeMessage(player1, message, 1000);
-        assertEquals(result.finalMessage, message.toLowerCase());
-        assertNull(result.muteReason);
-    }
-
-    @Test
-    public void testSpamDetectorCapsOK()
-    {
-        SpamDetector detector = new SpamDetector();
-        String message = "=D";
-        SpamAnalysisResult result = detector.AnalyzeMessage(player1, message, 1000);
-        assertEquals(result.finalMessage, message);
-        assertNull(result.muteReason);
-    }
+//    @Test
+//    public void testSpamDetectorCaps()
+//    {
+//        SpamDetector detector = new SpamDetector();
+//        String message = "OMG I LUFF U KRISTINAAAAAA!";
+//        SpamAnalysisResult result = detector.AnalyzeMessage(player1, message, 1000);
+//        assertEquals(result.finalMessage, message.toLowerCase());
+//        assertNull(result.muteReason);
+//    }
+//
+//    @Test
+//    public void testSpamDetectorCapsOK()
+//    {
+//        SpamDetector detector = new SpamDetector();
+//        String message = "=D";
+//        SpamAnalysisResult result = detector.AnalyzeMessage(player1, message, 1000);
+//        assertEquals(result.finalMessage, message);
+//        assertNull(result.muteReason);
+//    }
 
     @Test
     public void testSpamDetectorWarnAndBan()

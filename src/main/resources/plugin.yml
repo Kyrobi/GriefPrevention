@@ -327,9 +327,6 @@ permissions:
     griefprevention.separate:
         description: Grants access to /Separate and /UnSeparate.
         default: op
-    griefprevention.ignore:
-        description: Grants access to /Ignore, /Unignore, and /IgnoreList
-        default: true
     griefprevention.claimbook:
         description: Grants access to /ClaimBook.
         default: op
