@@ -50,6 +50,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -478,9 +479,24 @@ public class EntityDamageHandler implements Listener
         // If the player interacting is the owner, always allow.
         if (attacker.equals(owner)) return true;
 
+        Claim claim;
+
         // Allow admin override.
         PlayerData attackerData = this.dataStore.getPlayerData(attacker.getUniqueId());
         if (attackerData.ignoreClaims) return true;
+
+        // If the pet is tamed AND inside the claim of the owner, don't allow
+        claim = dataStore.getClaimAt(pet.getLocation(), false, null);
+        if(claim != null){
+            UUID claimOwnersID = claim.getOwnerID();
+            UUID petOwnersID = pet.getOwner().getUniqueId();
+
+            if(claimOwnersID.equals(petOwnersID)){
+                GriefPrevention.sendMessage(attacker, TextMode.Err, "You can't hurt pets inside the owner's claim.");
+                event.setCancelled(true);
+                return true;
+            }
+        }
 
         // Disallow provocations while PVP-immune.
         if (attackerData.pvpImmune)
@@ -494,7 +510,6 @@ public class EntityDamageHandler implements Listener
         // Wolves are exempt from pet protections in PVP worlds due to their offensive nature.
         if (event.getEntity().getType() == EntityType.WOLF) return true;
 
-        Claim claim;
         // Note: Internal name is not descriptive. Actual node is "GriefPrevention.PVP.ProtectPetsOutsideLandClaims"
         if (!instance.config_pvp_protectPets)
         {
