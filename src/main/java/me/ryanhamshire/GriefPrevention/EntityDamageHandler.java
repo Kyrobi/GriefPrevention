@@ -485,18 +485,6 @@ public class EntityDamageHandler implements Listener
         PlayerData attackerData = this.dataStore.getPlayerData(attacker.getUniqueId());
         if (attackerData.ignoreClaims) return true;
 
-        // If the pet is tamed AND inside the claim of the owner, don't allow
-        claim = dataStore.getClaimAt(pet.getLocation(), false, null);
-        if(claim != null){
-            UUID claimOwnersID = claim.getOwnerID();
-            UUID petOwnersID = pet.getOwner().getUniqueId();
-
-            if(claimOwnersID.equals(petOwnersID)){
-                GriefPrevention.sendMessage(attacker, TextMode.Err, "You can't hurt pets inside the owner's claim.");
-                event.setCancelled(true);
-                return true;
-            }
-        }
 
         // Disallow provocations while PVP-immune.
         if (attackerData.pvpImmune)
